@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHILTER VK Token</title>
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+</head>
+<body style="font-family:Arial;padding:30px">
+    <h2>PHILTER Sync</h2>
+    <p id="status">VK wird initialisiert...</p>
+    <button id="auth" style="padding:12px 20px;font-size:16px">
+        VK-Zugriff erlauben
+    </button>
+    <pre id="result" style="white-space:pre-wrap;word-break:break-all;margin-top:20px"></pre>
+<script>
+const APP_ID = 54800050;
+vkBridge.send('VKWebAppInit')
+.then(() => {
+    document.getElementById('status').textContent = 'Bereit.';
+})
+.catch(err => {
+    document.getElementById('status').textContent = 'Init-Fehler: ' + JSON.stringify(err);
+});
+document.getElementById('auth').onclick = async () => {
+    const out = document.getElementById('result');
+    try {
+        out.textContent = 'Berechtigung wird angefordert...';
+        const result = await vkBridge.send('VKWebAppGetAuthToken', {
+            app_id: APP_ID,
+            scope: 'market'
+        });
+        out.textContent =
+            'TOKEN ERHALTEN\n\n' +
+            result.access_token +
+            '\n\nDiesen Token NICHT in ChatGPT senden.';
+    }
+    catch (err) {
+        out.textContent = 'FEHLER:\n' + JSON.stringify(err, null, 2);
+    }
+};
+</script>
+</body>
+</html>
